@@ -51,7 +51,7 @@ class BankSystem(SRH):
 
         if message is not "":
             message = message.decode("utf-8").replace("\n","")
-
+            
         return message
 
     def get_card(self):
@@ -75,7 +75,7 @@ class BankSystem(SRH):
                 elif option is 2 :
                     self.withdraw()
                 elif option is 3 :
-                    pass
+                    self.deposit()
                 elif option is 4 :
                     pass
 
@@ -99,9 +99,20 @@ class BankSystem(SRH):
             self.send_message(1)
         else:
             self.send_message(0)
+
+
+    def deposit(self):
+        self.send_message("Enter deposit amount -: ")
+        amount = self.receive_message()
+        amount = int(amount)
+
+        if amount >0:
+            BankSystem.demo_data[self.current_card]["bal"] = BankSystem.demo_data[self.current_card]["bal"]+amount
+            self.send_message(1)
+        else:
+            self.send_message(0)
             
-        
-                
+
 #instantiating the TCP server       
 bankSystem = TCP(("localhost",8800),BankSystem)
 

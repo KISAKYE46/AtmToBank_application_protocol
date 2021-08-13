@@ -2,33 +2,12 @@ from socket import * #importing sockets
 from sys import platform
 import os
 import re 
+from client_socket import ClientSocket
 
-class ATM:
+class ATM(ClientSocket):
     def __init__(self):
-        try:
-          self.atm_socket =  socket(AF_INET,SOCK_STREAM)
-          self.conn()
-          self.welcome()
-
-        except ConnectionRefusedError as err:
-          ATM.log("Connection Refused..")
-        
-    #for connection
-    def conn(self):
-        self.atm_socket.connect(("localhost",8800))
-        
-    #for receiving messages
-    def receive_message(self):
-        return self.atm_socket.recv(1024).decode("utf-8")
-        
-    #for sending messages
-    def send_message(self,data):
-        self.atm_socket.send(bytes("{}\n".format(data).encode("utf-8")))
-
-    #display welcome message
-    def welcome(self):
-        message = self.receive_message()
-        ATM.log(message)
+      super().__init__()
+      self.welcome()
 
     def send_card(self,card):
       card_status = 0
@@ -40,6 +19,10 @@ class ATM:
       else:
         return False
 
+    def welcome(self):
+        message = self.receive_message()
+        print(message)
+        
     def read_card(self):
       card = ""
       card = input("Enter card -: ")
@@ -88,12 +71,11 @@ class ATM:
           elif option is 2:
             self.withdraw()
           elif option is 3:
-            pass
+            self.deposit()
 
           elif option is 4:
             pass
            
-
     @staticmethod
     def log(info):
       if platform is "linux":
@@ -119,6 +101,24 @@ class ATM:
       withdraw_status = int(withdraw_status)
 
       if withdraw_status is 1:
+        ATM.log("Deposit was succesfull..")
+        return True
+      else:
+        ATM.log(">>-------->Sorry!! Transaction Failed..")
+        return False
+
+
+    #for cash deposit
+    def deposit(self):
+      withdraw_message = ""
+      withdraw_message =  self.receive_message()
+      user_value = input(withdraw_message)
+      self.send_message(user_value)
+      withdraw_status = self.receive_message()
+
+      withdraw_status = int(withdraw_status)
+
+      if withdraw_status is 1:
         ATM.log("$$ Pick Your Cash _/_/_/_/")
         return True
       else:
@@ -135,9 +135,3 @@ if(atm.read_card()):
   
 else:
   ATM.log("Faulty Card")
-
-
-
-
-
-
