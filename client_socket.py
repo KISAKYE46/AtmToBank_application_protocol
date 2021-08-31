@@ -9,7 +9,7 @@ class ClientSocket:
 
   #for connection
   def conn(self):
-    self.client_socket.connect(("localhost",8800))
+    self.client_socket.connect(("localhost",8100))
       
   #for receiving messages
   def receive_message(self):
